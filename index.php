@@ -213,7 +213,6 @@
     <div id="notes">
         <h4>Notes</h4>
         <ul>
-            <li>Future difficulty prediction factor has been added to the graph! Clear your cache if it's not working for you.</li>
             <li>Remember to take your hashrate from what your pool reports, this eliminates any error from stale shares and miner dev fees (Claymore's miner)</li>
             <li>Do you find this calculator accurate/inaccurate or have a question or comment? Send me an email, link below!</li>
             <li>The utility fetches live Monero network & price data from http://moneroblocks.info/ and http://coinmarketcap.com</li>
