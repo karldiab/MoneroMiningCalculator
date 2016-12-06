@@ -80,7 +80,7 @@
                     </tr>
                     <tr>
                         <th>Difficulty:</th>
-                        <td><input type="number" ng-model="difficulty" ng-change="computeProfits()"/></td>
+                        <td><input type="number" ng-model="difficulty" ng-change="computeProfits()"/> Billion</td>
                     </tr>
                     <tr>
                         <th>Block Reward:</th>
@@ -125,7 +125,7 @@
                     </tr>
                     <tr>
                         <th>Diff Change</th>
-                        <td><input type="number" ng-model="diffChange" ng-change="computeProfits()"/> / Month</td>
+                        <td><input type="number" ng-model="diffChange" ng-change="computeProfits()"/> Billion / Month</td>
                     </tr>
                 </table>
                 <h3>Profits At This Difficulty</h3>

@@ -41,7 +41,7 @@ function data($scope, $http) {
                 $http.get("http://moneroblocks.info/api/get_block_header/" + (response.height - 43200))
                 .success(function(response) {
                     //console.log(response.block_header.difficulty);
-                    $scope.diffChange = parseFloat(($scope.difficulty - (response.block_header.difficulty)/1e9).toFixed(2));
+                    $scope.diffChange = parseFloat(($scope.difficulty - (response.block_header.difficulty)/1e9).toFixed(4));
                     });        
                 });        
                         
