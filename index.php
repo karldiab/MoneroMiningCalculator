@@ -174,14 +174,6 @@
                             <td>{{values[3][3]|currency}}</td>
                             <td ng-class="{negative: values[4][3] < 0}">{{values[4][3]|currency}}</td>
                         </tr>
-                        <tr>
-                            <td>Yearly</td>
-                            <td>{{values[0][4]|number:4}}</td>
-                            <td>{{values[1][4]|currency}}</td>
-                            <td>{{values[2][4]|currency}}</td>
-                            <td>{{values[3][4]|currency}}</td>
-                            <td ng-class="{negative: values[4][4] < 0}">{{values[4][4]|currency}}</td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
