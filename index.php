@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" ng-app ng-controller="data">
   <head>
-    <title>ZCash Mining Calculator</title>
-    <meta name="description" content="An easy to use crypto-currency finance utility used to calculate a ZCash miner's potential profits in ETH and multiple fiat
+    <title>Monero Mining Calculator</title>
+    <meta name="description" content="An easy to use crypto-currency finance utility used to calculate a Monero miner's potential profits in XMR and multiple fiat
                                 currencies. The calculator fetches price and network data from the internet
                                  and only requires the hash rate (speed of mining) from the user. A projected future profit
                                   chart is created dynamically and displayed instantly.">
-    <meta name="keywords" content="ZCash,Mining,Profitability,Calculator,AngularJS,AJAX,finance,currency,cryptocurrency,money,bitcoin,Ethereum">
+    <meta name="keywords" content="Monero,Mining,Profitability,Calculator,AngularJS,AJAX,finance,currency,cryptocurrency,money,bitcoin,Ethereum">
     <meta name="author" content="Karl Diab">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
@@ -35,8 +35,8 @@
     echoTopHalf();
     ?> 
     <div id="header">
-        <div id="bigTitle"><h2>ZCash Mining Calculator</h2></div>
-        <div id="smallTitle"><h4>ZCash Mining Calculator</h4></div>
+        <div id="bigTitle"><h2>Monero Mining Calculator</h2></div>
+        <div id="smallTitle"><h4>Monero Mining Calculator</h4></div>
         <!--<div id="infoMessage">
             <p></p>
         </div>-->   
@@ -64,7 +64,7 @@
         </script>
     </div>
     <div class="row">
-        <div class="animated zoomInRight col-md-5">
+        <div class="animated zoomInRight col-md-6">
                 <table id="inputTable">
                     <tr>
                         <th>Hashrate:</th>
@@ -72,8 +72,9 @@
                             <input type="number" id="userHash" ng-model="userHash" 
                             ng-change="computeProfits()" placeholder="Enter Hashrate" />
                             <select ng-model="userHashSuffix" ng-change="computeProfits()">
-                            <option value="s" selected="selected" ng-init="userHashSuffix = 's'">Sols/s</option>
-                            <option value="ks">kSols/s</option>
+                            <option value="h">h/s</option>
+                            <option value="kh" selected="selected" ng-init="userHashSuffix = 'kh'">kh/s</option>
+                            <option value="mh">Mh/s</option>
                             </select>
                         </td>
                     </tr>
@@ -83,10 +84,10 @@
                     </tr>
                     <tr>
                         <th>Block Reward:</th>
-                        <td><input type="number" ng-model="blockReward" ng-change="computeProfits()"/> ZEC</td>
+                        <td><input type="number" ng-model="blockReward" ng-change="computeProfits()"/> XMR</td>
                     </tr>
                     <tr>
-                        <th>ZEC Price:</th>
+                        <th>XMR Price:</th>
                         <td><input type="number" ng-model="price" ng-change="computeProfits()"/>
                             <select ng-model="currency" ng-change="fetchPriceOnly()">
                             <option value="USD" ng-init="currencyCode = 'USD'">USD</option>
@@ -112,7 +113,11 @@
                     </tr>
                     <tr>
                         <th>Power Cost:</th>
-                        <td><input type="number" ng-model="powerCost" ng-change="computeProfits()" ng-init="powerCost = 0"/> {{ currency }} / kWh</td>
+                        <td><input type="number" ng-model="powerCost" ng-change="computeProfits()" ng-init="powerCost = 0.1"/> {{ currency }} / kWh</td>
+                    </tr>
+                    <tr>
+                        <th>Reject Rate</th>
+                        <td><input type="number" ng-model="rejectRate" ng-change="computeProfits()" ng-init="rejectRate = 1"/> %</td>
                     </tr>
                     <tr>
                         <th>Pool Fee</th>
@@ -120,7 +125,7 @@
                     </tr>
                     <tr>
                         <th>Diff Change</th>
-                        <td><input type="number" ng-model="diffChange" ng-change="computeProfits()"/> / Week</td>
+                        <td><input type="number" ng-model="diffChange" ng-change="computeProfits()"/> / Month</td>
                     </tr>
                 </table>
                 <h3>Profits At This Difficulty</h3>
@@ -129,7 +134,7 @@
                     <thead>
                         <tr>
                             <th>Period</th>
-                            <th>ZEC</th>
+                            <th>XMR</th>
                             <th>{{currency}}</th>
                             <th>Power Cost ({{currency}})</th>
                             <th>Pool Fees ({{currency}})</th>
@@ -181,12 +186,12 @@
                 </table>
             </div>
         </div>
-        <div class="col-md-5 animated fadeIn" id="chartContainer">
+        <div class="col-md-4 animated fadeIn" id="chartContainer">
             <div id="chartNotReady" ng-hide="myLineChart">
                 <h3>Enter hashrate data for responsive chart!</h3>
             </div>
             <div  ng-show="myLineChart">
-            <h3>Estimated Total Future Profits ({{currency}})</h3>
+            <h3>Estimated Future Profits ({{currency}})</h3>
             <canvas id="myChart" height="400px" width="300px"></canvas><br/>
             Time Frame:
             <input type="number" ng-model="timeFrame" id="axisChange" ng-init="timeFrame = 6" ng-change="changeAxis()"/> Months</br>
@@ -211,12 +216,12 @@
             <li>Future difficulty prediction factor has been added to the graph! Clear your cache if it's not working for you.</li>
             <li>Remember to take your hashrate from what your pool reports, this eliminates any error from stale shares and miner dev fees (Claymore's miner)</li>
             <li>Do you find this calculator accurate/inaccurate or have a question or comment? Send me an email, link below!</li>
-            <li>The utility fetches live ZCash network & price data from https://explorer.zcha.in and http://coinmarketcap.com</li>
+            <li>The utility fetches live Monero network & price data from http://moneroblocks.info/ and http://coinmarketcap.com</li>
     </div>
     <div id="authorInfo">
         <a href="http://www.karldiab.com"><button class="btn btn-success btn-sm">Website</button></a>
         <a href='&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#107;&#97;&#114;&#108;&#64;&#107;&#97;&#114;&#108;&#100;&#105;&#97;&#98;&#46;&#99;&#111;&#109;'><button class="btn btn-primary btn-sm">Email</button></a>
-        <a href="https://github.com/karldiab/ZCashMiningCalculator"><button class="btn btn-danger btn-sm">Source Code</button></a>
+        <a href="https://github.com/karldiab/MoneroMiningCalculator"><button class="btn btn-danger btn-sm">Source Code</button></a>
     </div>
     <?php 
     echoBottomHalf();

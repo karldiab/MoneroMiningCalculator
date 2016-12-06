@@ -8,22 +8,6 @@ function data($scope, $http) {
         fetch();
     }
     
-$scope.solsPerDiff = 8192;
-
-    //this function came from https://github.com/badmofo/zcash-mining-calculator/
-    //Thanks bad mofo!
-    $scope.blockSubsidy = function(height) {
-        var slowStartInterval = 20000;
-        var halvingInterval = 840000;
-        var fullBlockReward = 10.000;
-        var slowStartRate = 0.0005;
-        if ( height < slowStartInterval ) {
-            return (slowStartRate * (height + 1));
-        } else {
-            return fullBlockReward / Math.pow(2,Math.floor(height/halvingInterval));
-        }
-    };
-
         var pendingTask;
         // will load results when the string in search box changes
         $scope.change = function() {
@@ -44,22 +28,21 @@ $scope.solsPerDiff = 8192;
         //function that grabs api data from the net
         function fetch() {
             //finding average price between 3 high volume exchanges.
-            $http.get("https://coinmarketcap-nexuist.rhcloud.com/api/zec")
+            $http.get("https://coinmarketcap-nexuist.rhcloud.com/api/xmr")
             .success(function(response) {
                 $scope.price = response.price.usd;
                 $scope.price = parseFloat(parseFloat($scope.price).toFixed(2));
             });
-            $http.get("https://api.zcha.in/v1/mainnet/network")
+            $http.get("http://moneroblocks.info/api/get_stats/")
             .success(function(response) {
-                //parseFloat((($scope.ethereumStats.data[0].difficulty)/1e12).toFixed(4))
-                $scope.difficulty = parseInt((response.difficulty));
-                $scope.blockReward = $scope.blockSubsidy(response.blockNumber);
-                var specificBlockFetchURL = "https://api.zcha.in/v1/mainnet/blocks?sort=height&direction=descending&limit=1&offset=";
-                specificBlockFetchURL +=  Math.floor(604800/response.meanBlockTime);
-                $http.get(specificBlockFetchURL)
-                    .success(function(response) {
-                        $scope.diffChange = ($scope.difficulty - parseInt(response[0].difficulty));
-                    })
+                //console.log(response.difficulty);
+                $scope.difficulty = parseFloat(((response.difficulty)/1e9).toFixed(4));
+                $scope.blockReward = (response.last_reward)/1e12;
+                $http.get("http://moneroblocks.info/api/get_block_header/" + (response.height - 43200))
+                .success(function(response) {
+                    //console.log(response.block_header.difficulty);
+                    $scope.diffChange = parseFloat(($scope.difficulty - (response.block_header.difficulty)/1e9).toFixed(2));
+                    });        
                 });        
                         
         }
@@ -67,7 +50,7 @@ $scope.solsPerDiff = 8192;
         //this function grabs price data only when the currency is changed
         $scope.fetchPriceOnly = function() {
             //finding average price between 3 high volume exchanges.
-            $http.get("https://coinmarketcap-nexuist.rhcloud.com/api/zec")
+            $http.get("https://coinmarketcap-nexuist.rhcloud.com/api/xmr")
             .success(function(response) {
                 if ($scope.currency == "USD") {
                     $scope.price = response.price.usd;
@@ -117,13 +100,15 @@ $scope.solsPerDiff = 8192;
                 }
             });
         }
-    /*Function that calculates the profits of the user in ethereum.*/
+
     $scope.computeProfits = function() { 
 
-            if ($scope.userHashSuffix == "s") {
+            if ($scope.userHashSuffix == "h") {
                 $scope.userHashSuffixMult = 1;
-            } else if ($scope.userHashSuffix == "ks") {
+            } else if ($scope.userHashSuffix == "kh") {
                 $scope.userHashSuffixMult = 1e3;
+            } else if ($scope.userHashSuffix == "mh") {
+                $scope.userHashSuffixMult = 1e6;
             }
             if ($scope.powerSuffix == "W") {
                 $scope.userPowerSuffixMult = 0.001;
@@ -131,9 +116,9 @@ $scope.solsPerDiff = 8192;
                 $scope.userPowerSuffixMult = 1;
             }
             //long block of math logic to find the hourly rates of gross earnings, power costs, pool fees, and profit
-            $scope.earnings.hourGrossZEC = ($scope.userHash/(($scope.difficulty)*$scope.solsPerDiff))*$scope.blockReward*3600*$scope.userHashSuffixMult;
-            $scope.values[0] = [$scope.earnings.hourGrossZEC];
-            $scope.earnings.hourGrossUSD = $scope.earnings.hourGrossZEC*$scope.price;
+            $scope.earnings.hourGrossXMR = (($scope.userHash*(1-($scope.rejectRate/100)))/(($scope.difficulty*1e9)))*$scope.blockReward*3600*$scope.userHashSuffixMult;
+            $scope.values[0] = [$scope.earnings.hourGrossXMR];
+            $scope.earnings.hourGrossUSD = $scope.earnings.hourGrossXMR*$scope.price;
             $scope.values[1] = [$scope.earnings.hourGrossUSD];
             $scope.earnings.powerCostHour = ($scope.wattage*$scope.userPowerSuffixMult*$scope.powerCost)
             $scope.values[2] = [$scope.earnings.powerCostHour];
@@ -173,14 +158,14 @@ $scope.solsPerDiff = 8192;
 
                 if ($scope.diffChange > 0) {
                     if ($scope.diffChange/$scope.difficulty > 0.1) {
-                        projectedDifficulty += (($scope.diffChange/$scope.difficulty)*$scope.diffChange*30.0/7.0);
+                        projectedDifficulty += (($scope.diffChange/$scope.difficulty)*$scope.diffChange);
                     } else {
-                        projectedDifficulty += ($scope.diffChange*30.0/7.0);
+                        projectedDifficulty += ($scope.diffChange);
                     }
                 } else if (-($scope.diffChange/$scope.difficulty) > 0.4) {
                     projectedDifficulty = $scope.difficulty;
                 } else {
-                    projectedDifficulty *= 1 + ($scope.diffChange*30.0/7.0)/$scope.difficulty;
+                    projectedDifficulty *= 1 + ($scope.diffChange)/$scope.difficulty;
                 }
                 if (projectedDifficulty < 1) {
                     projectedDifficulty = 1;
